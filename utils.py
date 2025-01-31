@@ -82,7 +82,7 @@ def generate_invite_qr(link):
     qr = QRCodeStyled()
     image_buffer = qr.get_buffer(
         data=link, 
-        image=Image.open("image.png"), # temp
+        # image=Image.open("image.png"), # temp
         _format="PNG"
     )
     image_buffer.seek(0)
