@@ -1,0 +1,6 @@
+django
+aiogram
+natasha
+python-dotenv
+qrcode-styled
+lxml
