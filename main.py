@@ -123,6 +123,7 @@ async def sign_up_pupil_handler(message: types.Message, state: FSMContext) -> No
 
         await message.answer("Пожалуйста, введите вашу Фамилию и Имя.  \n\nПример: Иванов Иван")
 
+
 @router.message(Command("add_admin"), F.from_user.id == ROOT_ADMIN)
 async def command_add_admin_handler(message: types.Message) -> None:
 
@@ -413,7 +414,6 @@ async def handle_edit_schedule(query: CallbackQuery, callback_data: keyboards.Ed
     ClassRoom = ClassRoom.first()
 
     if callback_data.is_back:
-        await query.message.delete()
         answer = f'🗓 Выберите день для редактирования расписания {callback_data.class_number} "{callback_data.class_letter}"'
         keyboard = utils.generate_week_schedule_for_admin(ClassRoom)
         await query.message.answer(answer, reply_markup=keyboard, parse_mode="Markdown")

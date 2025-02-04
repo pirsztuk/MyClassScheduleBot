@@ -64,7 +64,7 @@ def generate_specific_classrooms(ClassRooms:models.ClassRooms, class_number:int,
     
     builder = InlineKeyboardBuilder()
 
-    for class_letter in class_letters:
+    for class_letter in sorted(class_letters, key=lambda x: x.lower()):
 
         builder.row(
             InlineKeyboardButton(text=f'{class_number} "{class_letter}" класс', callback_data=keyboards.ViewClassRoomCallback(class_number=class_number, class_letter=class_letter, purpose=purpose).pack()),
