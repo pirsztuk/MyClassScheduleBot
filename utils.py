@@ -9,30 +9,37 @@ from aiogram.filters.callback_data import CallbackData
 from Models import models
 import keyboards
 
-segmenter = Segmenter()
-morph_vocab = MorphVocab()
+# segmenter = Segmenter()
+# morph_vocab = MorphVocab()
 
-emb = NewsEmbedding()
-morph_tagger = NewsMorphTagger(emb)
-syntax_parser = NewsSyntaxParser(emb)
-ner_tagger = NewsNERTagger(emb)
+# emb = NewsEmbedding()
+# morph_tagger = NewsMorphTagger(emb)
+# syntax_parser = NewsSyntaxParser(emb)
+# ner_tagger = NewsNERTagger(emb)
 
 
 def extract_bare_fullname_from_text(text:str) -> Union[str, None]:
 
-    doc = Doc(text)
-    doc.segment(segmenter) 
-    doc.tag_morph(morph_tagger)
-    doc.parse_syntax(syntax_parser)
-    doc.tag_ner(ner_tagger)
+    # doc = Doc(text)
+    # doc.segment(segmenter) 
+    # doc.tag_morph(morph_tagger)
+    # doc.parse_syntax(syntax_parser)
+    # doc.tag_ner(ner_tagger)
 
-    if len(doc.spans) > 0:
-        doc.spans[0].normalize(morph_vocab)
+    # if len(doc.spans) > 0:
+    #     doc.spans[0].normalize(morph_vocab)
 
-        if len(doc.spans[0].normal.split()) >= 2:
-            return doc.spans[0].normal
+    #     if len(doc.spans[0].normal.split()) >= 2:
+    #         return doc.spans[0].normal
 
-    return None
+
+    words = text.split()
+    if len(words) != 2:
+        return None
+    for word in words:
+        if not word.isalpha() or not word[0].isupper() or not word[1:].islower():
+            return None
+    return text
 
 
 def generate_classrooms(ClassRooms:models.ClassRooms, purpose:str) -> Union[InlineKeyboardMarkup, None]:
