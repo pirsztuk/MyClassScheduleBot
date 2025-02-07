@@ -1,2 +1,1 @@
-Local contest passed, so it means, that I have to completely refactor this project, redesign the whole architecture and create a stable version for commercial use
-For this purpose I'll create a new branch 
+##This is the core development branch. It will include a web version, and everything will be managed with Docker
