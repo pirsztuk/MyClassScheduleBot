@@ -1,0 +1,60 @@
+
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    container_name: backend_container
+    depends_on:
+      - postgres
+
+    volumes:
+      - ./backend:/app
+    
+    networks:
+      - default
+
+    ports:
+      - "8000:8000"
+
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+
+  bot:
+    build:
+      context: .
+      dockerfile: ./bot/Dockerfile
+    container_name: bot_container
+    depends_on:
+      - backend
+
+    volumes:
+      - ./bot:/bot
+      - ./backend/Models:/bot/Models
+      - ./backend/MyClassScheduleWebsite/settings.py:/bot/MyClassScheduleWebsite/settings.py
+    command: python /bot/main.py
+
+  postgres:
+    image: postgres
+    restart: always
+
+    env_file:
+     - ./backend/.env
+
+    networks:
+      - default
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    
+    ports:
+      - "5432:5432"
+
+
+volumes:
+  postgres_data:
+
+networks:
+  default:

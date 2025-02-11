@@ -1,23 +1,18 @@
 import os
 import sys
-import time
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 import django
 import asyncio
-from io import BytesIO
 
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, F, Router, types
 from aiogram.enums import ParseMode
 from aiogram.client.default import DefaultBotProperties
 from aiogram.filters import CommandStart, Command, CommandObject
-from aiogram.types import Message, CallbackQuery, LinkPreviewOptions
-from aiogram.utils.markdown import hbold
+from aiogram.types import Message, CallbackQuery
 from aiogram.utils.deep_linking import create_start_link
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.storage.base import StorageKey
-from aiogram.fsm.state import State, StatesGroup
 
 os.environ.setdefault(
     "DJANGO_SETTINGS_MODULE", "MyClassScheduleWebsite.settings"
@@ -29,10 +24,10 @@ django.setup()
 load_dotenv()
 
 # Import Django ORM models
-from Models.models import Users, ClassRooms, ScheduleDays, Lessons
-import utils
-import states
-import keyboards
+from Models.models import School, User, SchoolClass, ClassSchedule, ScheduleDay, Lesson
+# import utils as utils
+import states as states
+import keyboards as keyboards
 
 # Extract bot token from environment variables
 TOKEN = os.getenv("BOT_TOKEN")
@@ -66,23 +61,23 @@ async def command_start_handler(
 Я твой помощник с расписанием. Буду держать тебя в курсе, что, где и когда! Заглядывай сюда, чтобы всё знать первым. 🚀"""
     keyboard = None
 
-    if Users.objects.filter(TelegramId=message.from_user.id).exists():
+    if User.objects.filter(telegram_id=message.from_user.id).exists():
 
-        User = Users.objects.get(TelegramId=message.from_user.id)
+        User = User.objects.get(telegram_id=message.from_user.id)
 
-        if User.UserType == Users.UserTypeChoices.PUPIL:
+        if User.role == 'student':
 
             answer = "Привет! 👋 Смотри свое расписание"
             keyboard = keyboards.pupil_keyboard
 
-        elif User.UserType == Users.UserTypeChoices.TEACHER:
+        elif User.role == 'teacher':
 
             keyboard = keyboards.teacher_keyboard
 
     elif (
         args
         and len(args) == 32
-        and ClassRooms.objects.filter(ClassRoomIdentifier=args).exists()
+        and SchoolClass.objects.filter(identifier=args).exists()
     ):
 
         answer = "Привет! 👋\nЯ твой помощник с расписанием. Буду держать тебя в курсе, что, где и когда!\n\nПожалуйста, введите вашу Фамилию и Имя."
@@ -163,6 +158,27 @@ async def command_add_admin_handler(message: types.Message) -> None:
             "Необходимо написать коману в формате `/add_admin 1230154081 Пирштук Роман`"
         )
 
+@router.message(Command("kurwa"), F.from_user.id == ROOT_ADMIN)
+async def command_add_admin_handler(message: types.Message):
+    # URL вашего Web App
+    login_url = types.LoginUrl(url="https://webhook.site")  # Замените на фактический URL
+
+    web_app_info = types.WebAppInfo(url=login_url.url)
+
+    from aiogram.utils.keyboard import InlineKeyboardBuilder
+    builder = InlineKeyboardBuilder()
+
+    # Добавление кнопки с WebAppInfo
+    builder.button(
+        text="Открыть",
+        web_app=web_app_info
+    )
+
+    # Отправка сообщения с инлайн-клавиатурой
+    await message.answer(
+        text=f"Нажмите кнопку ниже, чтобы открыть панель администратора: {login_url.url}",
+        reply_markup=builder.as_markup()
+    )
 
 @router.message(F.text == "Моё расписание 📝")
 async def handle_classrooms(message: Message):

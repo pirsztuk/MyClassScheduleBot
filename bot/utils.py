@@ -1,15 +1,6 @@
 from typing import Union
 from qrcode_styled import QRCodeStyled
 from PIL import Image
-from natasha import (
-    Segmenter,
-    MorphVocab,
-    NewsEmbedding,
-    NewsMorphTagger,
-    NewsSyntaxParser,
-    NewsNERTagger,
-    Doc,
-)
 from aiogram.types import (
     Message,
     KeyboardButton,
@@ -22,30 +13,10 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 from aiogram.filters.callback_data import CallbackData
 
 from Models import models
-import keyboards
-
-# segmenter = Segmenter()
-# morph_vocab = MorphVocab()
-
-# emb = NewsEmbedding()
-# morph_tagger = NewsMorphTagger(emb)
-# syntax_parser = NewsSyntaxParser(emb)
-# ner_tagger = NewsNERTagger(emb)
+import keyboards as keyboards
 
 
 def extract_bare_fullname_from_text(text: str) -> Union[str, None]:
-
-    # doc = Doc(text)
-    # doc.segment(segmenter)
-    # doc.tag_morph(morph_tagger)
-    # doc.parse_syntax(syntax_parser)
-    # doc.tag_ner(ner_tagger)
-
-    # if len(doc.spans) > 0:
-    #     doc.spans[0].normalize(morph_vocab)
-
-    #     if len(doc.spans[0].normal.split()) >= 2:
-    #         return doc.spans[0].normal
 
     words = text.split()
     if len(words) != 2:
